@@ -1,0 +1,75 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/21ab99a8c0374efb50139a5c4d612c3a.html
+现同步至github
+
+一：css hack
+
+    1. IE 条件注释法 针对IE引入一个css文件：
+        <!--[if IE]>
+            <link type="text/css"  href="test.css" rel="stylesheet" />
+        <! [endif]-->
+        只针对IE6:<!--[if IE 6]>   针对IE6以上版本:<!--[if gt IE 6]>   其中(gt:大于；!:不等于；lt:小于；gt    ...)
+
+    2.选择符前缀法
+<style type="text/css">
+          .test{width:80px;}   
+          *html .test{width:60px} 
+          *+html .test{width:70px}
+       </style>
+
+    3.样式属性前缀法
+"_"：只在IE6下生效； "*":在IE6和IE7下生效
+
+
+二：IE 下hasLayout属性
+     1. 可以通过使用zoom:1  来触发hasLayout；在zoom:1无效的情况下可以使用 position:relative来触发
+
+        2.display:inline-block和hasLayout
+IE6和IE7不支持display:inline-block 可以通过触发hasLayout属性来实现
+
+三：relative,absolute和float
+     1. position:relative和position:absolute都可以让元素激活left,top,right,bottom和z-index属性
+
+        2. position:relative会保留自己在z-index:0层的站位,left,top,right,bottom等是相对于自己在z-index:0层的位置，对
+            其他在z-index:0层的元素位置不会造成影响
+
+        3. position:absolute会完全脱离文档流,不再在z-index:0层保留占位符,其left,top,right,bottom等是相对于自己最近的一
+            个设置了position:relative或position:absolute的祖先元素的，如果祖先元素都没设置，那么就相对于body元素
+
+        4. float也能改变文档流，但是仍然让元素在z-index:0层排列，不通过left,right等属性控制，只有float:left或float:right控
+            制左右浮动，会改变正常的文档流排列，影响到周围原始
+
+        5. position:absolute和float会隐式地改变display类型，除了原来是display:none的，都会让元素以display:inline-block
+            的方式显示：可以设置长宽，默认宽度并不占满父元素，就算显示设置display:inline或者display:block仍然无效(float在IE6
+            下的双倍编剧bug就是利用添加display:inline来解决的)；但是position:relative却不会隐式改变display的类型
+
+四：居中
+       1. 水平居中
+              (1)文本，图片等行内元素的水平居中可以通过设置text-align:center来实现
+              (2)确定宽度的块级元素的水平居中可以设置margin-left:auto和margin-right:auto实现
+              (3)不确定宽度的块级元素的水平居中： 
+                  1)使用table，将需要居中的元素包含在table标签内，对table设置margin-left:auto;margin-right:auto;但是增加了无意义的标签
+
+                  2)改变块级元素的display为inline然后使用text-align:center来实现；但是设置为inline后比起块级元素缺少了功能，如设定长宽等
+                  3)设置幅原始float,然后父元素设置position:relative和left:50% 子元素设置position:relative和left:-50%来实现水平剧中;但是
+                     position:relative带来了一定的副作用
+
+
+           1. 竖直居中
+              (1)父元素高度不确定的文本，图片，块级元素的竖直居中是通过给父容器设置相同的上下边距实现的(padding-top:20px;padding-bottom:20px)
+              (2)父元素高度确定的单行文本竖直剧中是通过给父元素设置line-height和父元素高度值相同来实现的
+              (3)父元素高度确定的多行文本，图片，块级元素的竖直居中：
+                  1)使用vertical-align属性，但只有父元素为td或者th时这个属性才会生效可以通过添加table标签来实现(td标签默认情况下就隐式vertical-align:middle)
+                    但是添加了无语义标签，增加了嵌套深度
+                  2)也可以通过设置display:table-cell来激活vertical-align属性，但是在IE6,7下并不兼容。可以利用hack来兼容IE6,7:通过给父子两层元素分别设置top:50%
+                     和top:-50%来实现居中
+五：Flash和网页元素显示
+          1. 无论如何设置z-index  flash都会浮在其他元素之上：浏览器解析页面时，会先判断元素类型，如果是窗口类型，会优先于非窗口类型的元素，显示在最顶端。
+              flash嵌入网页中有个wmode属性用于指定窗口模式，有window(窗口),opaque(非窗口不透明),transparent(非窗口透明)可以设置wmode为opaque
+              或transparent。(IE下以object标签嵌入，Firefox下用embed嵌入)
+
+
+六：IE6下png图片及透明问题
+      1. IE6下png图片显示为淡蓝色，可以通过IE下私有的滤镜功能来解决：_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='png图片路径',
+              sizingMethod='crop'); 也可以通过调用js批量处理该问题
+          2.可以通过使用IE的滤镜实现透明效果  filter[backcolor=rgb(245, 248, 253)]:alpha(opacity=50) ， IE9以上及其他浏览器使用 opacity[backcolor=rgb(245, 248, 253)]:0.5
