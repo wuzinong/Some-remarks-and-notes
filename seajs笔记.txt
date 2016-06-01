@@ -1,0 +1,100 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/8da69349d15bebc12c72fa33cb2f5940.html
+现同步至github
+一：使用seajs.use在页面中加载模块当然，要记得引入seajs：<script src="sea.js"></script>
+HTML 代码
+
+
+
+123456789101112131415161718192021222324
+//如果不需要回调函数：
+seajs.use('init');//直接引用initjs
+或者使用以下简写：
+//如果需要引入模块
+seajs.use('init',function(init){//先引用init.js，再在回调函数中引用init.js中的pageLoad方法
+init.pageLoad();
+});
+//引入多个模块:
+seajs.use(['init','main','jquery'],function(init,main,$){
+    init.pageLoad();
+});
+//也可以使用一些简写方式：
+<script src="./seajs/sea.js" data-config="config" data-main="asset"></script>//config指定了读取哪个配置文件，同时main配置了加载哪个js
+//其实以上的简写方式等价于：
+seajs.config({
+    ......
+});
+seajs.use('asset');
+
+二：关于config
+一个栗子：
+HTML 代码
+
+
+
+891011121314151617181920212223242526272829303132333435363738
+                'underscore': {
+                        src: 'libs/underscore.js',
+                        exports: '_'
+                },
+                'backbone': {
+                        src: 'libs/backbone.js',
+                        deps: ['underscore', 'jquery'],
+                        exports: 'Backbone'
+                },
+        'cfgj': {
+            src: 'libs/cfgj.js',
+            deps: ['jquery']
+        },
+        'iscroll': {
+            src: 'libs/iscroll.js'
+        },
+                'md5':{
+                        src: 'libs/md5.js'
+                },
+                'base64':{
+                        src: 'libs/base64.js'
+                }
+        },
+        charset: "utf-8",
+    map: [[/^((?!.*zepto|.*underscore|.*backbone|.*iscroll|.*md5|.*base64|.*config).*\.(?:css|js))(.*)$/i, "$1?"+(sessionStorage["EastMoney.CFGJ.jscssStamp"]||Math.random() )]]
+})
+更多config相关，引用这位前辈的文章：Click Here
+
+三：关于模块又一栗子：
+HTML 代码
+
+
+
+101112131415161718192021222324252627282930313233343536373839404142
+$(".headMobile .zcsImg").toggle();
+});
+}
+}
+//调用暴露出的方法
+(function () {
+seajs.config({
+charset: "utf-8"
+});
+seajs.use(global_jscript, function (init) {
+var $;
+$ = init.jq;
+return $(function () {
+init.headerTCode();
+});
+});
+})();
+//如果在同一个js中定义多个不同的模块时可以根据指定ID来区别，第一个参数为指定的ID,第二个参数为需要引用的文件(气质数组的第三项为需要引用的html模板),最后一个是回调函数，那么，要是想引用模块下的其他模块呢？(通过第二个参数传入响应模块ID即可：['widget/loading/init'])
+define('widget/loading/main',["troopjs-core/component/gadget",
+    "jquery",
+    "template!./index.html"
+], function(Gadget, $, template) {
+    "use strict";
+    return Gadget.extend(function($el) {
+        var me = this;
+        me.$el = $el;
+    }, {
+        "sig/start": function() {
+
+
+记录一下以备以后使用，嗯嗯

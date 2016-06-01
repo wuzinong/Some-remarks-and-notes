@@ -1,0 +1,51 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/1fba81cc189a22329ead06ab0a7f1015.html
+现同步至github
+
+
+一：创建仓库
+$ git config --global user.name "wuzinong"
+$ git config --global user.email "wuzinong@example.com"//初始化用户名等
+
+$ mkdir "E:\Project\GitOsc"
+$ cd "E:\Project\GitOsc"
+$ pwd //查看当前目录
+$ git init//初始化当前目录，变成可管理的仓库
+$ ls -ah //查看目录下文件
+
+$ git add test.txt //添加新的文件
+$ git add test1.txt test2.txt  //可以连续添加多个文件
+$ git commit -m "this is a description to the commited file"//提交添加的文件，后面写描述
+
+
+//修改测试使用的test 文件
+$ git status //调用命令，显示出test文件被改过
+$ git diff test.txt //调用diff命令，会显示出这个文件与之前的文件内容对比，发现改了哪些内容
+$ git add test.txt //对比无误以后将修改以后的test文件add进去
+$ git commit -m "commit changed content" //同样，add完毕以后需要commit，同时可以在commit前调用status方法查看目前的状态(会提示有个修改尚未被提交)
+
+$ git log //查看提交记录 可以使用git log --pretty=oneline 只显示描述等
+$ git reset --hard HEAD^ //退回上一个版本，使用^代表上一个版本，上上个版本：^^ ,或者写成：HEAD~99   使用数字代表回到往上第几个版本
+$ cat test.txt   //查看内容，此时是上一个版本的内容，此时在调用git log则回到该版本之后的提交记录都没有了
+$ git reset --hard 651af28604a49890a2e66932d79dba18849a4ad1  //此时可以调用此命令，后接提交的版本号就可以回到对应的版本，版本号不必都写，会模糊查找
+$ git reflog //此命令记录了你的每一次命令，也可以通过这个命令找到之前执行的命令进行回撤
+
+$ git checkout -- test.txt  //让文件回到最近一次git commit或git add的状态 
+更新步骤
+$git add .
+$git commit -m "comments.."
+$git fetch
+$git rebase origin/master
+---解决冲突
+$git --continue
+--还有冲突就再解决
+
+$git status 查看状态
+$git push 提交
+
+$git status 查看状态
+$git push 提交
+切换版本：
+git checkoutorigin/dev-head-b dev-head
+换回来？
+git checkout origin/master

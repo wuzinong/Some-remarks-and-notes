@@ -1,0 +1,340 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/18d5bac206f8fd7ad34bffb8e5fed98b.html
+现同步至github
+
+记录一下学习gulp中遇到的一些问题
+
+一：预备工作
+
+1.安装nodejs   http://www.w3cfuns.com/notes/13600/c32f9ebf16614efb4a6038ec1b440d7f 
+
+2.新建testGulp文件夹并在此文件夹下再建两个文件夹build(用于存放处理后的文件) src(原生js及css文件)
+
+3.在src文件夹下新建scripts及styles文件夹分别表示用来存放js文件及css文件
+
+二：练习
+gulp提供的插件较多，此处选择几个有用插件
+
+1.首先进cmd并定位到所在文件夹： E:\test\testGulp
+
+2.运行npm install gulp 安装glup ，输入 gulp -v 查看是否安装成功
+
+3.执行npm init命令，此处会创建一个package.config文件这个文件可以记录之后安装的插件包，其他人只要使用npm installl命令就能通过此配置安装必要的插件了
+
+4.在testGulp即根目录下新建文件gulpfile.js（此文件可以配置命令等，使用gulp命令的时候默认调用的是此文件）
+
+测试准备：
+一：jshint插件练习
+
+1）安装一个jshint插件（检测js是否有语法错误等）: 运行 npm install gulp-jshint --save-dev 来进行插件安装，使用--save-dev可以自动更新package.json
+2）在src的scripts文件夹下新建两个文件test1.js 及test2.js
+
+html 代码片段
+
+
+
+12345678910111213141516171819
+比如：
+test1:
+function test1(){
+    var name = "peter";
+    testError //此处有坑，用于测试
+    return {
+        name:name
+    };
+}
+test2:
+function test2(){
+    var name = "Tom";
+    return {
+        name:name
+    };
+}
+
+
+3）开始配置gulpfile.js这个入口
+html 代码片段
+
+
+
+12345678
+var gulp = require('gulp');
+var jshint = require('gulp-jshint');
+gulp.task('hintTest', function() {
+    gulp.src(['./src/scripts/*.js'])
+      .pipe(jshint())
+      .pipe(jshint.reporter('default'));
+});
+
+
+4）运行gulp hintTest 会显示错误并有说明在哪一行出错，去除testError 在运行此命名通过
+
+二：concat,uglify插件练习（合并,混淆Js文件）
+1）同样，安装concat插件 npm install gulp-concat --save-dev  uglify插件：npm install gulp-uglify --save-dev
+2）修改gulpfile.js
+     
+html 代码片段
+
+
+
+12345678910
+var gulp = require('gulp');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+gulp.task('handleScripts', function() {
+    gulp.src(['./src/scripts/*.js'])
+      .pipe(concat("handledJS.js"))
+      .pipe(uglify())
+      .pipe(gulp.dest('build/scripts/'));//配置生成文件目录
+});
+
+
+三：监听文件变化实时处理:gulp.watch
+html 代码片段
+
+
+
+1234567891011121314151617181920212223242526
+var gulp = require('gulp'); //引入gulp
+var concat = require('gulp-concat');
+var jshint = require('gulp-jshint');//引入插件
+var uglify = require('gulp-uglify');
+gulp.task('hintTest', function() {
+    gulp.src(['./src/scripts/*.js'])
+      .pipe(jshint())
+      .pipe(jshint.reporter('default'));
+});//src配置需要对哪个文件进行Hint
+gulp.task('handleScripts', function() {
+    gulp.src(['./src/scripts/*.js'])
+      .pipe(concat("handledJS.js"))
+      .pipe(uglify())
+      .pipe(gulp.dest('./build/scripts/'));
+});
+//第二个参数如果指定则会先执行一次这两个task完了再监听
+gulp.task('watchTest',['hintTest','handleScripts'],function(){
+  gulp.watch('./src/scripts/*.js',function(){
+     gulp.run('hintTest','handleScripts');
+   });
+});
+
+
+至于操作css则是同样操作只不过需要引用其他插件，对此做一下记录以备后用
+
+
+四：使用require-dir来管理task
+对于task较多的情况，可以将每个task分开编写并通过此插件管理，同样首先需要安装require-dir插件
+在gulpfile.js中：
+html 代码片段
+
+
+
+12345
+var requireDir = require('require-dir');
+requireDir('./tasks');//指定执行task目录下的task 此外requireDir还有一些可选参数
+//简写：
+require('require-dir')('./gulp-tasks');
+
+
+网上的例子（具体网址找不到了- -）：
+新建task文件夹，并建立几个task文件：
+
+html 代码片段
+
+
+
+44454647484950515253545556575859606162636465666768697071727374
+var gulp = require('gulp');
+var config = require('../config').js;
+gulp.task('js', function(){
+    return gulp.src(config.src)
+        .pipe(gulp.dest(config.dest));
+});
+//watch.js
+var gulp = require('gulp');
+var watch = require('gulp-watch');
+var config = require('../config');
+gulp.task('watch', function(){
+    watch(config.less.all, function(){  //监听所有less
+        gulp.start('less');             //出现修改、立马执行less任务
+    });
+    watch(config.images.src, function(){  //监听所有image
+        gulp.start('images');           
+    });
+    watch(config.js.src, function(){  //监听所有js
+        gulp.start('js');           
+    });
+})
+//default.js
+var gulp = require('gulp');
+gulp.task('default', ['clean'], function(){
+    gulp.start('less', 'images', 'js', 'watch');
+});
+
+
+在clean.js中引用了config文件：
+html 代码片段
+
+
+
+12345678910111213141516171819202122232425
+/* gulp命令会由gulpfile.js运行，所以src和build文件夹路径如下（根目录下） */
+var src = './src';
+var dest = './build';
+module.exports = {
+    less: {
+        all: src + "/less/**/*.less", //所有less
+        src: src + "/less/*.less",    //需要编译的less
+        dest: dest + "/css",          //输出目录
+        settings: {                   //编译less过程需要的配置，可以为空
+        }
+    },
+    images: {
+        src: src + "/img/**/*",
+        dest: dest + "/img"
+    },
+    js: {
+        src: src + "/js/**/*",
+        dest: dest + "/js"
+    },
+    clean:{
+        src: dest
+    }
+}
+
+
+
+五：使用gulp-load-plugins插件加载package.json中的所有gulp模块
+html 代码片段
+
+
+
+123456789101112
+var gulp = require('gulp'),
+   gulpLoadPlugins = require('gulp-load-plugins'),
+   plugins = gulpLoadPlugins();
+ 
+gulp.task('test', function () {
+  return gulp.src('./src/js/*.js')
+    .pipe(plugins.jshint())
+    .pipe(plugins.jshint.reporter('default'))
+    .pipe(plugins.uglify())
+    .pipe(plugins.concat('app.js'))
+    .pipe(gulp.dest('./build'));
+});
+
+
+六：配合webpack
+html 代码片段
+
+
+
+27282930313233343536373839404142434445464748495051525354555657585960
+        .pipe(gulp.dest('public/js'));
+});
+gulp.task('css', function () {
+    return gulp.src(globs.less)
+        .pipe($.less())
+        .pipe($.minifyCss())
+        .pipe($.rename(function (path) {
+            path.basename = path.basename.replace(/\.main$/, '.min');
+        }))
+        .pipe(gulp.dest('public/css'));
+});
+gulp.task('assets', function () {
+    return mergeStream.apply(null, globs.assets.map(function(glob) {
+        return gulp.src(glob)
+            .pipe(gulp.dest(glob.replace(/\/\*.*$/, '').replace(/^frontend/, 'public')));
+    }));
+});
+gulp.task('html', function () {
+    return gulp.src(globs.html)
+        .pipe(gulp.dest('public'));
+});
+gulp.task('build', ['js', 'css', 'assets', 'html']);
+gulp.task('watch', ['build'], function () {
+    $.livereload.listen();
+    gulp.watch(globs.js, ['js', pop])
+        .on('change', push);
+
+
+
+
+
+一些常用的插件：参见此网站sass的编译（gulp-sass）
+自动添加css前缀（gulp-autoprefixer）
+压缩css（gulp-minify-css）
+js代码校验（gulp-jshint）
+合并js文件（gulp-concat）
+压缩js代码（gulp-uglify）
+压缩图片（gulp-imagemin）
+自动刷新页面（gulp-livereload）
+图片缓存，只有图片替换了才压缩（gulp-cache）
+更改提醒（gulp-notify）
+
+html 代码片段
+
+
+
+123456789101112131415161718192021222324252627282930313233
+//编译sass、自动添加css前缀和压缩
+// Styles任务
+gulp.task('styles', function() {
+    //编译sass
+    return gulp.src('stylesheets/main.scss')
+    .pipe(sass())
+    //添加前缀
+    .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
+    //保存未压缩文件到我们指定的目录下面
+    .pipe(gulp.dest('stylesheets'))
+    //给文件添加.min后缀
+    .pipe(rename({ suffix: '.min' }))
+    //压缩样式文件
+    .pipe(minifycss())
+    //输出压缩文件到指定目录
+    .pipe(gulp.dest('assets'))
+    //提醒任务完成
+    .pipe(notify({ message: 'Styles task complete' }));
+});
+//js代码校验、合并和压缩
+gulp.task('scripts', function() {
+    //js代码校验
+    return gulp.src('javascripts/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+    //js代码合并
+    .pipe(concat('all.js'))
+    //给文件添加.min后缀
+    .pipe(rename({ suffix: '.min' }))
+    //压缩脚本文件
+    .pipe(uglify())
+
+
+//编译React ,参考：https://github.com/MarshalW/ReactDemos/tree/comment-m2所需插件：
+npm install --save -dev browserify vinyl-source-stream vinyl-buffer gulp-sourcemaps reactify
+任务：
+javascript 代码
+
+
+
+1234567891011121314
+gulp.task('default', function () {
+    var b = browserify({
+        entries: './js/comments.js',
+        debug: true,
+        transform: [reactify]
+    });
+    return b.bundle()
+    .pipe(source('./bundle.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./js'));
+});
+
+
+
+
+参考文献：
+GitHub: https://github.com/gulpjs/gulp/blob/master/docs/API.md     
+中文官网：http://www.gulpjs.com.cn/docs/getting-started/            
+API:http://www.gulpjs.com.cn/docs/api/require-dir插件：https://www.npmjs.com/package/require-dirwebpack-Demo:https://github.com/mcfog/glimmervoid一些扩展：http://macr.ae/article/splitting-gulpfile-multiple-files.html常用插件及用法：https://segmentfault.com/a/1190000002698606
+

@@ -1,0 +1,59 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/55f389ae9a939af0f6e1ffc7af382722.html
+现同步至github
+
+ 一.能力检测
+HTML 代码
+
+
+
+1234567891011121314151617181920212223242526
+<font size="2">//确定浏览器支持特定的能力，给出解决方案
+if(object.propertyInQuestion){
+//使用object.propertyInQustion
+}
+//e.g IE5之前不支持document.getElementById()可以用以下代码检测，先判断方法是否存在，存在则调用
+function getElement(id){
+if(document.getElementById){
+return document.getElementById(id)
+}
+else if(document.all){
+return document.all(id);
+}
+else {
+throw new Error("No way to retrieve element1")；
+}
+}
+//一个特性存在并不一定意味着另一个特性也存在,document.all存在也不一定表示浏览器就是IE,实际上也可能是Opera，Opera支持document.all也支持window.innerWidth;
+function getWindowWidth(){
+   if(document.all){
+     return document.documentElement.clientWidth;
+    }else{
+       return window.innerWidth;
+   }
+}</font>
+二.更可靠的能力检测
+HTML 代码
+
+
+
+123
+function isSortable(object){
+   return typeof object.sort == "function";
+}
+三.能力检测，不是浏览器检测
+HTML 代码
+
+
+
+123456789101112
+<font size="2">//错误，还不够具体
+var isFirefox = !!(navigator.vendor && navigator.vendorSub);
+//错误,假设过头了
+var isIE = !!(document.all & document.uniqueID);
+//确定浏览器是否支持Netscape风格的插件
+var hasNspLUGINS = !!(navigator.plugins && navigator.plugins.length);
+//确定浏览器是否具有DOM1级规定的能力
+var hasDOM1 = !!(document.getElementById && document.createElement && document.getElementsByTagName);
+//应该将能力检测作为确定下一步解决方案的依据，而不是用它来判断用户使用的是什么浏览器</font>
+

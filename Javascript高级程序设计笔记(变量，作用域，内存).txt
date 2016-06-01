@@ -1,0 +1,45 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/452acb954f0e13451a3ab4b734b3da49.html
+现同步至github
+
+ 一.传递参数  1.ECMAScript中所有的函数参数都是按值传递的
+//基本类型
+function addTem(num){
+      num += 10;
+      return num;
+}
+var count =20;
+var result = addTem(count);
+console.log(count);//20
+console.log(result);//30
+
+//引用类型
+function setName(obj){
+    obj.name = "Nicholas";
+    obj   = new Object();//改变了引用，如果是按引用传递，则person.name也会被改变
+    obj.name = "Greg";
+}
+var person = new Object();
+setName(person);
+console.log(person.name);//Nicholas
+一.执行环境及作用域
+1.每个执行环境都有一个与之关联的变量对象(variable object)，环境中定义的所有变量和函数都保存在这个对象中(不会包括函数表达式)
+var num= 10;
+
+function declareTest() {} // 函数声明
+(function expressTest() {}); // 函数表达式
+
+console.log(
+  this.num== num, // true
+  window.declareTest== declareTest// true
+);
+
+console.log(expressTest); // undefined
+
+//每次程序执行时先会进入global excution context,调用其他函数时会先进入他们的上下文环境执行完以后退出其执行环境
+//当代码在一个环境中执行时，会创建变量对象的一个scope chain，保证对执行环境有权访问的所有变量和函数的有序访问
+//全局上下文变量对象VO:{foo:10,bar:declareTest()}
+//在函数的上下文中，变量对象就是AO:{arguments} 最开始之包含一个变量，即arguments对象(在全局环境中不存在此对象)
+//首先scope chain中只有global 的vo
+//当调用函数时，作用域中:{global:VO  & function:AO} 查找变量时先从调用的函数中查找再往外部作用域查找、
+//函数调用完毕则退出当前执行环境

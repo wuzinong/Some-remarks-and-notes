@@ -1,0 +1,157 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/c48b4a9943f423e997d80d1b346b0639.html
+现同步至github
+
+ 一.关于js加载   1.js是脚本语言，加载到哪儿就执行到哪儿，如果程序控制某个dom节点，而该dom几点当时还没有被载入，就会报错
+HTML 代码
+
+
+
+1234
+<script type="text/JavaScript">
+  alert(document.getElementById("test").innerHTML);
+</script>
+<div id="test">hello world</div>
+     2.有时候我们希望能无视其位置，可以调用window对象的onload事件:window对象会在网页内元素全部加载完毕后触发onload
+HTML 代码
+
+ 
+<script type="text/JavaScript">
+function init(){
+ alert(document.getElementById("test").innerHTML); 
+}
+window.onload=init;
+</script>
+<div id="test">hello world</div>
+       3.window的onload事件是要求网页内所有的元素全部加载完毕以后才会触发，如果加载时间长，则会延时很久。为了解决此问题，
+          很多js框架提供了DOMReady事件:只判断页面内所有的DOM节点是否已经全部生成，不关心节点内容是否加载完成，所以速度快。
+          如JQuery中的$(document).ready()，和YUI的YAHOO.util.Event.onDOMReady()方法。
+
+
+       4.DOMReady并不是原生的javascript支持的事件，但可以用一些简单的方法来模拟此功能:
+          定义init函数但并不着急立即调用它，可以在页面最后，即</body>标签之前调用
+HTML 代码
+
+
+<script type="text/JavaScript">
+function init(){
+ alert(document.getElementById("test").innerHTML);
+}
+</script>
+<div id="test">hello world</div>
+...
+<script type="text/JavaScript">
+if(init){ init();}//调用前先判断是否定义了此函数
+
+
+二.一些IE浏览器问题
+    1.通过document.all判断浏览器类型:IE支持document.all;Firefox会将包括空白，换行等文本信息也当作childNodes中的一员，而IE会忽略它只将DOM节点
+       当作childNodes中的一员；解决方案如下
+HTML 代码
+
+
+
+12345678910
+<ul>
+   <li id="item1"></li>
+   <li id="item2"></li>
+   <li id="item3"></li>
+</ul>
+<script type="text/JavaScript">
+function getNextNode(node){
+     node=typeof node=="string" ? document.getElementById(node) : node;
+     var nextNode = node.nextSibling;
+     if(!=nextNode) return null;
+     2.Event对象:IE下event对象是作为wndow的属性作用于全局作用域的,而在Firefox中，event是作为事件参数存在的。
+HTML 代码
+
+
+
+1
+<span id="span">hello world</span>
+      3.阻止事件冒泡:IE下通过设置event对象的cancelBubble属性为true实现，而Firefox通过stopPropagation实现
+
+HTML 代码
+
+
+
+123456789101112
+<script type="text/JavaScript">
+var btn = document.getElementById("btn");
+btn.onclick=function(e){
+    e = window.event || e;
+    if(!document.all){
+    e.cancelBubble = true;
+ }
+   else{
+    e.stopPropagation();
+ }
+}
+</script>
+      4.单独对同一个元素绑定两次事件，后面的会覆盖前面的:IE下使用attachEvent，Firefox下使用addEventListener可以多次绑定事件
+HTML 代码
+
+
+
+123
+<script type="text/JavaScript">
+function on(node,eventType,handler){
+ node = typeof node=="string" ? document.getElementById(node) : node;
+
+三.其他
+  1.js设置cookie:document.cookie = "name=test; expires=Mon, 30 Nov 2009 05:49:47 GMT;path=/";var cookieStr=document.cookie;
+       var name = cookieStr.split("name")[1].split(";")[0].split("=")[1];
+HTML 代码
+
+
+
+1
+GLOBAL.namespace("Cookie");
+四.面向对象编程
+1.公有和私有：js中的公有和私有是通过作用域实现的，通过this定义的属性是公有的，用var定义的是私有的
+HTML 代码
+
+
+
+123456
+function Animal(name){
+   //public attribute
+   this.name = name;
+   this.type  ="animal";
+   //private
+   var age = 20;
+     2.在js中，function有两种不同的调用方法  
+        1)作为函数存在直接使用"()"进行调用;funtion test(){};test(); //作为函数调用，this指向的是window对象
+        2)作为构造函数存在，使用new调用;function test(){};new test();//作为构造函数调用，this指向的是实例对象
+
+     3.使用call或者apply可以实现继承，但是对子类的原型添加的方法也会影响到父类
+HTML 代码
+
+
+
+12
+function Animal(name){//定义父类
+    this.name = name;
+     4.可以通过让子类的constuctor重新指向自己实现prototype的值传递:
+HTML 代码
+
+
+
+1234567891011
+function Animal(name){//定义父类
+    this.name = name;
+    this.type  = "animal";
+}
+Animal.prototype = {say:function(){alert("my name is"+this.name)}};
+//定义Bird类
+function Bird(name){
+    Animal.call(this,name);//完成构造函数的属性和行为的继承
+}
+<font color="#0000ff">Bird.prototype = new Animal();//这个时候Bird.prototype.constructor指向了Animal</font>
+     5.封装成extend函数
+HTML 代码
+
+
+
+1
+function extend(subClass,superClass){

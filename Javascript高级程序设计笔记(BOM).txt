@@ -1,0 +1,103 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/b8a821309c4946330037ba65abfd5342.html
+现同步至github
+
+一：Window对象
+1.window:既是通过JavaScript访问浏览器的一个接口，又是ECMAScript规定的Global对象
+    2.使用var语句添加的window属性有一个名为[[configurable]]的特性，这个特性值被设置为false,因此这样定义的属性不可以
+       通过delete操作符删除。IE8及更早版本在遇到delete删除window属性时会报错
+HTML 代码
+
+
+
+12345678
+var age = 29;
+window.color = "red";
+//在IE<9时报错，在其他浏览器中返回false
+delete window.age;
+//在IE<9时报错，在其他浏览器中返回true
+delete window.color;
+    3.尝试访问未声明的变量会抛出错误，但是通过产销window对象可以知道某个可能未生命的变量是否存在
+HTML 代码
+
+
+
+123456
+//报错，因为oldValue未定义
+var newValue = oldValue;
+//这里不会抛出错误，因为这是一次属性查询
+//newValue的值是undefined
+var newValue = window.oldValue;
+     4.窗口位置:IE,Safari,Opera和Chrome都提供screenLeft和screenTop属性，分别表示窗口相对于屏幕左边和上边的位置。FireFox
+
+        则在screenX和screenY属性中提供相同的窗口位置信息，safari和Chrome也同时支持这两个属性。Opera虽然也支持screenX和
+        screenY属性，但与screenLeft和screenTop属性并不对应。因此建议不要在Opera中使用它们
+HTML 代码
+
+
+
+123
+var leftPos = (typeof window.screenLeft == "number") ? window.screenLeft : window.screenX;
+var topPos = (typeof window.screenTop == "number") ? window.screenTop : window.screenY;
+      5.窗口大小:outerWidth和outerHeight返回浏览器窗口本身的尺寸;innerWidth和innerHeight则表示该容器中页面视图区的大小(减去边框宽度)
+         document.documentElement.clientWidth和document.documentElement.clientHeight中保存了页面适口的信息(可见区域大小)，在IE6中，这些属性必须
+         在标准模式下才有效，如果是混杂模式则要使用:document.body.clientWidth和document.body.clientHeight获得
+         document.body.offsetWidth/offsetHeight:网页可见区域大小(包括边线和滚动条的宽)         document.body.scrollWidth/scrollHeight:网页正文的宽高
+         document.body.scrollTop/scrollLeft:滚动条滚动的距离
+
+      6.间歇调用和超时调用：JavaScript是单线程语言，但它允许通过设置超时值和间歇时间值来调度代码在特定时刻执行
+HTML 代码
+
+
+
+123456789101112131415
+//不建议传递字符串，第二个参数是毫秒
+setTimeOut("alert('Hello World')",1000)
+//推荐的调用方式
+setTimeout(function(){alert("Hello world")},1000)
+//设置超时调用,setTimeout()返回一个数值ID,超时调用的代码都是在全局作用域中执行的，因此函数中的this的值在非严格模式下指向window对象，在严格模式下是undefined
+var timeoutId = setTimeout(function(){},1000)
+//取消
+clearTimeout(timeoutId)
+//间歇调用与超时调用类似，只不过按指定的时间间隔重复执行代码
+var intervalId = setInterval(function(){},1000);
+//清除
+clearInterval(intervalId);
+
+        7.location对象:是最有用的BOM对象之一，提供了与当前窗口中加载的文档有关的信息,还提供了一些导航功能。
+          它既是window对象的属性，又是document对象的属性,即window.location和document.location引用同一个对象
+HTML 代码
+
+
+
+1234567891011121314
+//打开新URL并在浏览器的历史记录中生成一条记录
+location.assign("http://www.g.cn")；
+//如果将location.href或window.location设置为一个URL值，也会以该值调用assign方法：
+window.location="http://www.g.cn";
+location.href="http://www.g.cn";//和直接调用assign()方法一样
+//每次修改location的属性(hash除外)，页面都会以新URL重新加载
+//通过上述任何一种方法修改URL之后，浏览器的历史记录中介会生成一条新记录,因此用户通过单击“后退”按钮导航到前一个页面，要禁止这种行为，可以使用replace()方法：
+location.replace("http://www.g.cn");
+//reload:如果页面自上次请求以来并没有改变过，页面就会从浏览器缓存中重新加载。
+location.reload();//重新加载(有可能从缓存中加载)
+location.reload(true);//重新加载(从服务器重新加载)
+
+        7.navigator对象:通常用于检测显示网页的浏览器类型(appVersion,language,plugins,uerAgent, etc.)
+        8.history对
+
+HTML 代码
+
+
+
+12345678910
+//后退一页
+history.go(-1);
+//前进一页
+history.go(1);
+//前进两个
+history.go(2);
+//跳转到最近的wrox.com页面
+history.go("wrox.com");
+//也可以使用back()和forward()代替go()
+//history.length返回所有向后和先前的记录数

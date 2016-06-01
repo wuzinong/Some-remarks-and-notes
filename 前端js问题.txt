@@ -1,0 +1,54 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/1a6ee5883f5b480149e1695e130496da.html
+现同步至github
+
+作为一个asp .neter 自学了一段时间的前端想转行做前端，结果其中一次面试被虐了，记录一下
+面试题很简单，实现使用register及exec等方法实现自己注册及触发事件，当时由于一直在看原型
+便说了下自己的想法并且尝试用原型，结果被否决了说用原型是无法实现的，而且用数组更方便，回来便自己写了个用原型实现的记录下：
+代码片段 1效果预览
+
+
+
+123456789101112131415161718192021222324252627282930313233
+        function methodList() { };
+        methodList.prototype.NameSpace = {};
+        methodList.prototype.register = function (name, func) {
+            if (!!methodList.prototype.NameSpace[name]) {
+                console.log("this method is exists please use another method to override this methos");
+            }
+            else {
+                methodList.prototype.NameSpace[name] = func;
+            }
+        }
+        methodList.prototype.exec = function (name) {
+            if (!!methodList.prototype.NameSpace[name]) {
+                return eval(methodList.prototype.NameSpace[name])();
+            }
+            else {
+                console.log("no such method , please fisrly regist this function");
+            }
+        }
+        methodList.prototype.delete = function (name) {
+            if (!!methodList.prototype.NameSpace[name])
+            {
+                methodList.prototype.NameSpace[name] = null;
+            }
+        }
+        var test = new methodList();
+        test.register("say", function () { console.log("Hello, I'm a say function") });
+        test.exec("say");
+        test.register("bark", function () { console.log("wowowo") });
+        test.exec("bark");
+        test.register("say", function () { console.log("another say function") })
+        test.exec("say");
+根据面试官所述，使用数组实现可以方便遍历及根据方法名直接访问
+代码片段 2效果预览
+
+
+
+123
+var aList = new Array();
+aList["say"] = function(){console.log("this is a say function")}
+aList["say"]();
+这样做确实可以通过添加的方法名来访问到这个方法，但总觉得和数组没什么关系，aList.length ==0,只不过将数组作为
+一个对象，在对象上挂方法，也不知道是不是自己理解有问题，权且记下以备后用

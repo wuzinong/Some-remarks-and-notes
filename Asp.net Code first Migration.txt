@@ -1,0 +1,31 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/dbf1183c4affd569ea7dc71d81d6994f.html
+现同步至github
+
+ 学习学习新姿势,记录一下学习Code first 时候遇到的问题
+
+1.遇到The EntityFramework package is not installed on project xxx
+可以执行： install-package entityframework
+
+2.遇到：.No context type was found in the assembly
+则表示没有找到数据库上下文DbContext
+此处由于DbContext和启动项目不在同一个项目下，所以产生此类报错
+
+执行Enable-Migrations 报此错误可以通过指定更详细的信息：
+
+Enable-Migrations [-ContextTypeName <String>][-EnableAutomaticMigrations][-ProjectName <String>][-StartUpProjectName <String>][-ConnectionStringName <String>][-Force][<CommonParameters>]
+ContextTypeName：项目继承自DBContext的类名字。
+
+EnableAutomaticMigrations：开启自动迁移。
+
+ProjectName：存放DBContext类的项目名称。
+
+StartUpProjectName：解决方案中启动项目的名称，作用是调用该项目下的连接字符串。
+
+ConnectionStringName：连接字符串名称
+
+Enable-Migrations -ProjectName "" -StartUpProjectName ""
+
+同样，在add和updata的时候也要加上
+add-migration -ProjectName "" -StartUpProjectName ""
+update-database -ProjectName "" -StartUpProjectName ""

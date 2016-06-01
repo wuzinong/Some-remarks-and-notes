@@ -1,0 +1,50 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/6803ba4c0776fe3339ad53eb81f84276.html
+现同步至github
+ 
+
+ 一.函数    1.定义函数的方式有两种：一种是函数声明，另一种是函数表达式
+HTML 代码
+
+
+
+ 
+//函数声明:函数声明提升（在执行代码之前会先读取函数声明）
+function functionName(arg0,arg1){}
+//函数表达式
+var functionName = function(){};
+
+
+
+          2.模仿块级作用域,js中没有块级作用域
+HTML 代码
+
+
+
+ 
+      },
+     
+     registerComponent:function(Component){
+      if(typeof component == "objecgt"){
+      components.push(component);
+    }
+    }
+    }
+}();
+//增强的模块模式:在返回对象之前加入对其增强的代码
+var application = function(){
+     var components = new Array();
+     components.push(new BaseComponent());
+   //创建application的一个局部副本
+  var app = new BaseComponent();
+   //公共接口
+ app.getComponentCount = function(){
+     return components.length;
+};
+app.registerComponent = function(component){
+   if(typeof component =="object"){
+    components.push(component);
+ }
+};
+  return app;
+}();

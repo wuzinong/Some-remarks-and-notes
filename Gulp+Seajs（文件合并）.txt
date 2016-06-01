@@ -1,0 +1,253 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/a95380f903809942b88283216761473a.html
+现同步至github
+
+
+一：准备测试用例（使用asp.net mvc 4.0）
+       1.新建测试页面:（页面很简单，目的是使用seajs使页面中文字变色，并在控制台输出一些东西）
+        
+html 代码
+
+
+
+12345678910111213141516171819202122232425
+//引入seajs
+  <script src="~/Scripts/sea.js"></script>
+  
+  //配置config文件
+  <script type="text/javascript">
+            seajs.config({
+                plugins:["shim"],
+                base: "@Url.Content("~/Scripts/")",
+                alias: {
+                    "jquery": "jquery-1.8.2.js",
+                    //"main": "main.js",
+                    "result":"/build/result.js"
+                }
+            });
+             seajs.use("result");//调用result.js，注意，这个js是合并后的文件，怎么合并？gulp!!
+           //seajs.use("main");
+</script>
+//DOM结构
+<div class="test">
+    hello
+</div>
+<div class="testTwo">
+    hello
+</div>
+
+
+    2.建立所需的2个js测试文件（在Scripts文件夹下）
+   
+html 代码
+
+
+
+1234567891011121314151617181920212223
+//test.js
+define(function (require, exports, module) {
+    var jQuery = require("jquery");
+    exports.add =  function (x, y) { jQuery(".test").css({ color: "red" }); return x + y; 
+    //暴露add方法，将第一段文字变红色并返回相加结果
+}
+    
+});
+//testTwo.js
+define(function (require, exports, module) {
+    var jQuery = require("jquery");
+    var test = require('/Scripts/test');
+    console.log("testTwo call test:" + test.add(1, 1));//调用上面test文件暴露的方法
+    exports.add =function (x, y) { jQuery(".testTwo").css({ color: "green" }); return x - y; 
+      //同时自己也暴露add方法，改变第二段文字的颜色，并且返回相减的结果
+    }
+    
+});
+
+
+     3.建立main.js文件，作为入口程序（调用上面的test及test2文件）
+        
+html 代码
+
+
+
+12345678
+define(function (require, exports, module) {
+    var $ = require("jquery");
+    var test = require("/Scripts/test");//引用test1
+    console.log(test.add(2, 1));
+    var testTwo = require("/Scripts/testTwo");//引用testTwo
+    console.log(testTwo.add(2, 1));
+});
+    
+
+    此时如果调用seajs.use("main");
+    call mainjs
+
+    这里可以看到两个文件的js都已被调用并且控制台上也输出了结果，但是发现还是将test及testTwo两个js加载进来了，那要是有100个js模块呢？也都加载进来？不能忍！
+
+
+二：使用gulp合并js模块文件
+       这么用？百度。。或者笔者之前的文章有过一些介绍可以参考下：gulp参考       这里给出gulpfile的配置，聊做参考：
+      
+html 代码
+
+
+
+123456789101112
+var gulp = require('gulp');
+var concat = require('gulp-concat');;
+var cmdPack = require('gulp-cmd-pack');
+var combo = require('gulp-seajs-combo');
+//var uglify = require('gulp-uglify');
+gulp.task('handleScripts', function () {
+    gulp.src(['./Scripts/test.js', './Scripts/testTwo.js','./Scripts/main.js'])
+        .pipe(concat('result.js'))
+        .pipe(gulp.dest('./build/'));
+});
+//大致做了这么几件事:哪些文件要合并？引进来；合并成什么文件？result.js;哪个目录下？build
+//如果js文件较多的话也可以将模块文件单独一个文件夹，然后使用通配符将该文件夹下js都进行处理即可
+
+
+    OK,下面就CMD定位到文件夹下，我的是：E:\MyTest\seajs\MvcApplication1\MvcApplication1
+    运行 gulp handleScripts   一切顺利的话就发现在build文件夹下生成了一个result文件，这个文件应该张这样
+   
+html 代码
+
+
+
+12345678910111213141516171819202122232425
+define(function (require, exports, module) {
+    var jQuery = require("jquery");
+    exports.add =  function (x, y) { jQuery(".test").css({ color: "red" }); return x + y; }
+    
+});
+define(function (require, exports, module) {
+    var jQuery = require("jquery");
+    var test = require('/Scripts/test');
+    console.log("testTwo call test:" + test.add(1, 1));
+    exports.add =function (x, y) { jQuery(".testTwo").css({ color: "green" }); return x - y; }
+    
+});
+define(function (require, exports, module) {
+    var $ = require("jquery");
+    var test = require("/Scripts/test");
+    console.log(test.add(2, 1));
+    var testTwo = require("/Scripts/testTwo");
+    console.log(testTwo.add(2, 1));
+});
+
+
+    Ok似乎已经合并完成了，那就引用下看看
+     call resultjs
+
+     result.js倒是调用了，但是test和test2是什么鬼？说好的合并呢？
+     这里就涉及到seajs调用模块的几个方法了，这里我们使用的define默认没有写id，那么默认的就是该文件的路径，那么生成的resultjs请求的时候就回去那个路径下找文件，纯属个人理解
+
+     什么都别说了，直接解决方案：
+     为2个js文件指定id:
+     
+html 代码
+
+
+
+12345678910111213141516
+//test.js ,please call me tid
+define('tid',function (require, exports, module) {
+    var jQuery = require("jquery");
+    exports.add =  function (x, y) { jQuery(".test").css({ color: "red" }); return x + y; }
+    
+});
+//testTwo.js , please call me tid2
+define('tid2',function (require, exports, module) {
+    var test = require('tid');
+    console.log("testTwo call test:" + test.add(1, 1));
+    exports.add =function (x, y) { jQuery(".testTwo").css({ color: "green" }); return x - y; }
+    
+});
+
+     
+    同时修改main.js的引用
+   
+html 代码
+
+
+
+12345678
+define(function (require, exports, module) {
+    var $ = require("jquery");
+    var test = require("tid");
+    console.log(test.add(2, 1));
+    var testTwo = require("tid2");
+    console.log(testTwo.add(2, 1));
+});
+
+
+    再次调用gulp handleScripts 得到以下文件，文件中可以看到引用都变成了id的形式
+   
+html 代码
+
+
+
+123456789101112131415161718192021222324
+define('tid',function (require, exports, module) {
+    var jQuery = require("jquery");
+    exports.add =  function (x, y) { jQuery(".test").css({ color: "red" }); return x + y; }
+    
+});
+define('tid2',function (require, exports, module) {
+    var test = require('tid');
+    console.log("testTwo call test:" + test.add(1, 1));
+    exports.add =function (x, y) { jQuery(".testTwo").css({ color: "green" }); return x - y; }
+    
+});
+define(function (require, exports, module) {
+    var $ = require("jquery");
+    var test = require("tid");
+    console.log(test.add(2, 1));
+    var testTwo = require("tid2");
+    console.log(testTwo.add(2, 1));
+});
+
+
+     配合Uglify插件混淆压缩js:
+     
+html 代码
+
+
+
+1234567891011121314151617181920212223
+var gulp = require('gulp');
+var concat = require('gulp-concat');;
+var cmdPack = require('gulp-cmd-pack');
+var combo = require('gulp-seajs-combo');
+var uglify = require('gulp-uglify');
+//var uglify = require('gulp-uglify');
+gulp.task('handleScripts', function () {
+    gulp.src(['./Scripts/test.js', './Scripts/testTwo.js','./Scripts/main.js'])
+        .pipe(concat('result.js'))
+         .pipe(uglify({
+             //mangle: true,//类型：Boolean 默认：true 是否修改变量名
+             mangle: { except: ['require', 'exports', 'module', '$'] }//排除混淆关键字
+         }))
+        .pipe(gulp.dest('./build/'));
+    //gulp.src(['./Scripts/main.js'])
+    //    .pipe(cmdPack({
+    //        mainId: "Scripts/",
+    //        base: 'Scripts/'
+    //    }))
+    //.pipe(concat("all.js"))
+    //.pipe(combo())
+    //.pipe(gulp.dest('Scripts/dist/'));
+})
+
+
+
+
+    结果：
+    dealed   
+
+
+
+
+    可以看到只请求了result.js这个文件，此处暂告一段落。记录下使用中遇到的一些问题已备后用
+    关于gulp合并seajs文件暂时也只想到这种方法，有更方便或者更好的方法欢迎交流

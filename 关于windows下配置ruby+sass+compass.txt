@@ -1,0 +1,25 @@
+笔记原地址：
+http://www.w3cfuns.com/notes/13600/6dbba5bd91d9dded509dbd8b82d29ead.html
+现同步至github
+
+关于这个配置网上有很多，记录一下，哼哼
+
+1.首先需要下载ruby并安装,最好安装在c盘中(网上这么说就装c盘了，反正也不大{:1_502:} )
+可以在官网下http://rubyinstaller.org/downloads/ 
+
+2.安装完以后：
+HTML 代码
+
+
+
+1234567
+1.打开cmd 定位到安装目录：cd "c:\Ruby22-64\bin"
+2.使用某宝提供的网站能能使得速度更快gem sources --remove https://rubygems.org/
+gem sources -a https://ruby.taobao.org/
+//重新定位完source后可以开始安装了
+gem install sass
+gem install compass
+
+3使用sass监听e:
+[backcolor=rgb(253, 253, 255)]cd "E:\CompassTest\sassTest"
+sass --watch style.scss:style.css
