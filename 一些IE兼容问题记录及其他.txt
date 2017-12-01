@@ -1,0 +1,332 @@
+记录一下工作中遇到的IE兼容问题及一些小功能
+
+一：问题
+1. parseInt(“08”),parseInt("09") 输出0
+    使用parseInt("08",10) 
+
+2. 横杠时间格式问题
+    全部转为斜杠格式比较 “2016-07-21”.replace(/\-/g,'/');
+
+3. 不支持indexOf
+   if(!Array.indexOf){
+    Array.prototype.indexOf = function(obj){
+        for(var i=0; i<this.length; i++){
+            if(this[i]==obj){
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+
+4.toFixed 不四舍五入
+ function changeDecimalBuZero(num, bitNum) {
+     var bb = num+"";  
+    var dian = bb.indexOf('.');  
+    var result = "";  
+    if(dian == -1){  
+        result =  num.toFixed(bitNum);  
+    }else{  
+        var cc = bb.substring(dian+1,bb.length);  
+        if(cc.length >=bitNum){  
+            result =bb.substring(0,dian+bitNum+1)
+            //result =  (Number(num.toFixed(bitNum))+0.01)*100000000000/100000000000;//js小数计算小数点后显示多位小数  
+        }else{  
+            result =  num.toFixed(bitNum);  
+        }  
+    }  
+    return result;
+}
+
+5.左右滚动广告
+     window.setInterval(function () {
+        var context = $("#broadcast_content");
+        var left = parseFloat(context.css('left'));
+        var length = context.text().length * 18*(-1);//18wei为font-size
+        if (left > length) {
+            context.css({ "left": left - 1 });
+        } else {
+            context.css({ "left":"450px"});//可见kuang框kuandu
+        }
+    }, 40);
+
+6.前端随机抽奖
+(function(){
+function rd(n,m){
+    var c = m-n+1; 
+    return Math.floor(Math.random() * c + n);
+}
+
+    setInterval(function getRandomInfo(){
+  var ln ="赵,钱,孙,李,周,吴,郑,王,冯,陈,楮,卫,蒋,沈,韩,杨,朱,秦,尤,许,何,吕,施,张,孔,曹,严,华,金,魏,陶,姜,戚,谢,邹,喻,柏,水,窦,章,云,苏,潘,葛,奚,范,彭,郎,鲁,韦,昌,马,苗,凤,花,方,俞,任,袁,柳,酆,鲍,史,唐,费,廉,岑,薛,雷,贺,倪,汤,滕,殷,罗,毕,郝,邬,安,常,乐,于,时,傅,皮,卞,齐,康,伍,余,元,卜,顾,孟,平,黄,和,穆,萧,尹,姚,邵,湛,汪,祁,毛,禹,狄,米,贝,明,臧,计,伏,成,戴,谈,宋,茅,庞,熊,纪,舒,屈,项,祝,董,梁,杜,阮,蓝,闽,席,季,麻,强,贾,路,娄,危,江,童,颜,郭,梅,盛,林,刁,锺,徐,丘,骆,高,夏,蔡,田,樊,胡,凌,霍,虞,万,支,柯,昝,管,卢,莫,经,房,裘,缪,干,解,应,宗,丁,宣,贲,邓,郁,单,杭,洪,包,诸,左,石,崔,吉,钮,龚,程,嵇,邢,滑,裴,陆,荣,翁,荀,羊,於,惠,甄,麹,家,封,芮,羿,储,靳,汲,邴,糜,松,井,段,富,巫,乌,焦,巴,弓,牧,隗,山,谷,车,侯,宓,蓬,全,郗,班,仰,秋,仲,伊,宫,宁,仇,栾,暴,甘,斜,厉,戎,祖,武,符,刘,景,詹,束,龙,叶,幸,司,韶,郜,黎,蓟,薄,印,宿,白,怀,蒲,邰,从,鄂,索,咸,籍,赖,卓,蔺,屠,蒙,池,乔,阴,郁,胥,能,苍,双,闻,莘,党,翟,谭,贡,劳,逄,姬,申,扶,堵,冉,宰,郦,雍,郤,璩,桑,桂,濮,牛,寿,通,边,扈,燕,冀,郏,浦,尚,农,温,别,庄,晏,柴,瞿,阎,充,慕,连,茹,习,宦,艾,鱼,容,向,古,易,慎,戈,廖,庾,终,暨,居,衡,步,都,耿,满,弘,匡,国,文,寇,广,禄,阙,东,欧,殳,沃,利,蔚,越,夔,隆,师,巩,厍,聂,晁,勾,敖,融,冷,訾,辛,阚,那,简,饶,空,曾,毋,沙,乜,养,鞠,须,丰,巢,关,蒯,相,查,后,荆,红,游,竺,权,逑,盖,益,桓,公,万俟,司马,上官,欧阳,夏侯,诸葛,闻人,东方,赫连,皇甫,尉迟,公羊,澹台,公冶,宗政,濮阳,淳于,单于,太叔,申屠,公孙,仲孙,轩辕,令狐,锺离,宇文,长孙,慕容,鲜于,闾丘,司徒,司空,丌官,司寇,仉,督,子车,颛孙,端木,巫马,公西,漆雕,乐正,壤驷,公良,拓拔,夹谷,宰父,谷梁,晋,楚,阎,法,汝,鄢,涂,钦,段干,百里,东郭,南门,呼延,归,海,羊舌,微生,岳,帅,缑,亢,况,后,有,琴,梁丘,左丘,东门,西门,商,牟,佘,佴,伯,赏,南宫,墨,哈,谯,笪,年,爱,阳,佟";
+  var nameList = ln.split(',');
+  var gender = ["先生","女士"];
+  var multiple = rd(3,6);
+  var result = nameList[rd(0,nameList.length-1)] + gender[rd(0,1)]+' 抽到了幸运奖'+multiple+'个神兜兜';
+  console.log(result);
+},1000)
+    
+}
+)();
+
+7.字符串和数字之间的隐式强制类型转换 (from 你不知道的javascript)
+var a = "42";
+var b = "0";
+var c = 42;
+var d = 0;
+a + b; // "420"
+c + d; // 42
+
+var a = [1,2];
+var b = [3,4];
+a + b; // "1,23,4"
+
+
+
+var a = 42;
+var b = a + "";
+b; // "42"
+//a + ""（隐式）和前面的String(a)（显式）之间有一个细微的差别需要注意。根据
+//ToPrimitive 抽象操作规则，a + "" 会对a 调用valueOf() 方法，然后通过ToString 抽象
+//操作将返回值转换为字符串。而String(a) 则是直接调用ToString()。
+//它们最后返回的都是字符串，但如果a 是对象而非数字结果可能会不一样！
+var a = {
+valueOf: function() { return 42; },
+toString: function() { return 4; }
+};
+a + ""; // "42"
+String( a ); // "4"
+
+var a = [3];
+var b = [1];
+a - b; // 2
+//为了执行减法运算，a 和b 都需要被转换为数字，它们首先被转换为字符串（通过
+//强制类型转换 toString()），然后再转换为数字。
+
+8.全局DOM 变量 (from 你不知道的javascript)
+在创建带有id 属性
+的DOM 元素时也会创建同名的全局变量。例如：
+<div id="foo"></div>
+以及：
+if (typeof foo == "undefined") {
+foo = 42; // 永远也不会运行
+}
+console.log( foo ); // HTML元素
+ 
+9.页面滚动条问题
+  1.灵敏度： -webkit-overflow-scrolling: touch;
+
+
+2.滚动条穿透
+.alpha { height: 100%; overflow: hidden; position: relative;}
+.alpha body { height: 100%; overflow: hidden;}
+
+给html添加class alpha 并在弹出框事件中控制 
+
+10.滚动定位到指定位置（每个设备都一样）
+$("html,body").animate({scrollTop:$("#" + id).offset().top}, 800);  //动态获取元素的高度在滚动至该高度
+
+11.动态设置字体大小（rem）
+     设置meta:    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+     var calculate_size = function() {
+            // var BASE_FONT_SIZE = 100;
+            var docEl = document.documentElement,
+                clientWidth = document.querySelector(".container").clientWidth;
+            if (!clientWidth) return;
+            docEl.style.fontSize = (clientWidth / 10) + 'px';
+        };
+        // Abort if browser does not support addEventListener
+        if (document.addEventListener) {
+            var resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+            window.addEventListener(resizeEvt, calculate_size, false);
+            document.addEventListener('DOMContentLoaded', calculate_size, false);
+            calculate_size();
+        }
+
+12.去除元素点击默认色块
+-webkit-tap-highlight-color:rgba(0,0,0,0);
+    禁止用户选择
+-webkit-user-select:none
+
+13.格式化金额
+//计算器
+function fmoney(s, n) {
+    n = n > 0 && n <= 20 ? n : 2;
+    s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";
+    var l = s.split(".")[0].split("").reverse(),
+    r = s.split(".")[1];
+    t = "";
+    for (i = 0; i < l.length; i++) {
+        t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");
+    }
+    return t.split("").reverse().join("");
+    //return t.split("").reverse().join("") + "." + r;
+}
+
+function GetMoney(moneyval) {
+    var fomatmoney = "";
+    var reg = new RegExp(",", "g"); //创建正则RegExp对象   
+    moneyval = moneyval.replace(reg, "");
+
+    if (moneyval.length > 9) {
+        moneyval = parseInt(moneyval / 100) + "";
+    }
+
+    if (isNaN(moneyval) || moneyval == "") {
+        document.getElementById("moneytxt").value = "";
+        document.getElementById("money").innerHTML = "0";
+        return;
+    }
+    if (isNaN(moneyval) || moneyval.length < 1) {
+        if (parseFloat(moneyval) < 1) {
+            alert("数字不能小于1！");
+            return;
+        } 
+        alert("请输入数字！");
+        return;
+    }
+
+    if (moneyval === " ") {
+        console.log("error");
+        document.getElementById("moneytxt").value = "";
+        return;
+    }
+
+    var fomatmoney = fmoney(moneyval, 0);
+    document.getElementById("moneytxt").value = fomatmoney;
+    document.getElementById("money").innerHTML = parseInt(moneyval * 5 / 1000) > 50000?50000:parseInt(moneyval * 5 / 1000);
+    //if (isNaN(moneyval) || moneyval.length < 4) {
+    //    document.getElementById("money").innerHTML = parseInt(0);
+    //}
+}
+
+14.jquery 使用eq 和 nth-child
+ if(clientWidth >=1200){
+            //  $("tr td:eq(1) ").each(function(){
+            //      var that = $(this);
+            //      console.log(that.html())
+            //      that.find("a div").eq(0).css("max-width","120px");
+            //  }); // not work
+            
+            //can use:
+            $("tr").each(function(){
+                $(this).children("td").eq(1).find("a div").css("max-width","120px")
+            });
+            //or use
+                    $("tr td:nth-child(2)").each(function(){
+                 var that = $(this);
+                 that.find("a div").eq(0).css("max-width","120px");
+             });
+
+        }
+    
+15.判断iframe是否加载成功
+  iframe.onload = function(){
+   var that = $(this)[0];
+   try{
+        that.contentDocument;
+   }
+   catch(err){
+        //TODO 
+   }
+}
+
+16.关于Knockout 使用jquery直接赋值无效问题
+使用change方法： $("#id").val("testValue").change()
+
+二：小功能
+1.倒计时
+  function show_timese(t1, now, target) {//目标时间,现在事件，目标元素
+    var temp;
+    if (t1 - now > 0) {
+        temp = t1 - now;
+    } else {
+        temp = 1;
+    }
+ 
+    // 天
+    var int_day = Math.floor(temp / 86400000)
+    temp -= int_day * 86400000;
+    // 时
+    var int_hour = Math.floor(temp / 3600000)
+    temp -= int_hour * 3600000;
+    // 分
+    var int_minute = Math.floor(temp / 60000)
+    temp -= int_minute * 60000;
+    // 秒 
+    var int_second = Math.floor(temp / 1000)
+    
+    }
+    
+    
+    //调用
+    setInterval(function() {
+        show_timese(time1, time_now, target);
+    }, 60000)
+    
+2. js加载
+  var JsLoader = function(sUrl, fCallback) {
+    var _script = document.createElement('script');
+
+    _script.setAttribute('type', 'text/javascript');
+    _script.setAttribute('src', sUrl);
+    document.getElementsByTagName('head')[0].appendChild(_script);
+
+    if (_script.addEventListener) {
+
+        _script.onload = function() {
+            _script.parentNode.removeChild(_script);
+            fCallback && fCallback();
+
+        }
+    } else if (_script.readyState) {
+
+        _script.onreadystatechange = function() {
+
+            if (_script.readyState == 'loaded' || _script.readyState == 'complete') {
+                _script.onreadystatechange = null;
+                _script.parentNode.removeChild(_script);
+                fCallback && fCallback();
+            }
+
+        }
+    } else {
+        _script.parentNode.removeChild(_script);
+    }
+
+
+};
+
+3.获取特定链接属性
+  function getQueryString(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+      }
+      
+      //调用（配合aspx判断特定环境下再调用）
+      
+             <%if (this.IsInEnviroment){%>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    var ver = getQueryString("v")||'4.0.1';//低于某版本不显示
+                    if(ver<'4.2.0'){
+                        $("#gdsy").hide();
+                    }
+                });
+            </script>
+        <%}%>
+
+三：aspx
+直接页面上写c# 再生成静态页面
+ <script type="text/javascript" runat="server">
+          public String getBxDetailUrl(){
+             return ""
+          }
+ </script>
+<a class="fund-detail" href="<%=getBxDetailUrl() %>"
+ onclick="javascript:if(typeof(CntDetail)==='function') CntDetail();" >
+ <span class="innerTitle">某某标题</span>
+<p class="fp">详情&gt;</p>
+</a>
