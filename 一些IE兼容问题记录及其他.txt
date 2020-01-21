@@ -103,6 +103,7 @@ a - b; // 2
 //为了执行减法运算，a 和b 都需要被转换为数字，它们首先被转换为字符串（通过
 //强制类型转换 toString()），然后再转换为数字。
 
+
 8.全局DOM 变量 (from 你不知道的javascript)
 在创建带有id 属性
 的DOM 元素时也会创建同名的全局变量。例如：
@@ -234,6 +235,178 @@ function GetMoney(moneyval) {
 16.关于Knockout 使用jquery直接赋值无效问题
 使用change方法： $("#id").val("testValue").change()
 
+17.点击其他区域关闭某区域
+$(document).mouseup(function(e){
+
+  var _con = $(' 目标区域 ');  // 设置目标区域
+
+  if(!_con.is(e.target) && _con.has(e.target).length === 0){ // Mark 1
+
+    some code...  // 功能代码
+
+  }
+
+});
+
+/* Mark 1 的原理：
+
+判断点击事件发生在区域外的条件是：
+
+1. 点击事件的对象不是目标区域本身
+
+2. 事件对象同时也不是目标区域的子元素
+
+*/
+
+18.图片转blob,base64 (React Croper)
+<AvatarSelector
+
+                                    src={this.props.profileSettings.photo}
+
+                                    onChange={this.onAvatarSelectorChange}
+
+                                    onChangeIllegalType={this.onChangeIllegalType}
+
+                                    inputProps={{name: 'wort-wort-wort'}}
+
+                                    isLoading={this.props.profileSettings.isLoading}
+
+                                    size = "150px"
+
+                                />
+
+<div onClick = {this.chooseImg}>
+
+            <ReactCrop
+
+                    src={this.state.src}
+
+                    crop={this.state.crop}
+
+                    onImageLoaded={this.onImageLoaded}
+
+                    onComplete={this.onCropComplete}
+
+                    onChange={this.onCropChange}
+
+                />
+
+</div>
+
+onCropChange = (crop:any) => {
+
+        this.setState({crop:crop});
+
+};
+
+onImageLoaded = (image:any):void => {
+
+        this.imageRef = image;
+
+};
+
+onCropComplete = async (crop:any, pixelCrop:any) => {
+
+        if (crop.width && crop.height) {
+
+          const croppedImageUrl = await this.getCroppedImg(
+
+            this.imageRef,
+
+            pixelCrop,
+
+            'newFile.jpeg',
+
+          );
+
+          this.setState({croppedImageUrl:croppedImageUrl });
+
+        }
+
+      };
+
+chooseImg = (e:any)=>{
+
+        e.preventDefault();
+
+        let now = new Date().getTime();
+
+        if( now - this.touchTime < 500){
+
+            this.touchTime = now;
+
+            this.handlePhotoChange();
+
+        }else{
+
+            this.touchTime = now;
+
+        }
+
+        // this.resetValidation();
+
+    }
+
+getCroppedImg(image:any, pixelCrop:any, fileName:any) {
+
+        const canvas = document.createElement('canvas');
+
+        canvas.width = pixelCrop.width;
+
+        canvas.height = pixelCrop.height;
+
+        const ctx = canvas.getContext('2d');
+
+        (ctx as any).drawImage(
+
+          image,
+
+          pixelCrop.x,
+
+          pixelCrop.y,
+
+          pixelCrop.width,
+
+          pixelCrop.height,
+
+          0,
+
+          0,
+
+          pixelCrop.width,
+
+          pixelCrop.height,
+
+        );
+
+        return new Promise((resolve, reject) => {
+
+          canvas.toBlob((blob:any) => {
+
+            blob.name = fileName;
+
+            this.imageBlob = blob;
+
+            window.URL.revokeObjectURL(this.fileUrl);
+
+            this.fileUrl = window.URL.createObjectURL(blob);
+
+            //Convert to base64
+
+            var dataURL = canvas.toDataURL('image/png');
+
+            this.base64Url = dataURL;
+
+            resolve(this.base64Url);
+
+          }, 'image/jpeg');
+
+        });
+
+      }
+
+19.
+
 二：小功能
 1.倒计时
   function show_timese(t1, now, target) {//目标时间,现在事件，目标元素
@@ -317,6 +490,50 @@ function GetMoney(moneyval) {
                 });
             </script>
         <%}%>
+
+4.svg在ie下做背景图得时候background-position失效
+检查svg是否设置了width,height及合适得viewbox
+
+5.Git 倒出带历史记录的repo
+
+gitremote add origin  XXXXXXXXX
+
+gitpush -u origin –all
+
+在本地创建分支dev并切换到该分支
+
+git checkout -b dev(本地分支名称) origin/dev(远程分支名称)
+
+6.chrome设置跨域
+新建一个chrome快捷方式，右击属性，快捷方式，目标，添加 --disable-web-security --user-data-dir="C:/blabla"
+
+（"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:/blabla"）
+
+7.print
+ let html = document.querySelector(".print-area").innerHTML;
+
+        let myWindow=window.open('','','width='+(window.screen.availWidth-10)+',height='+(window.screen.availHeight-30)+',top=0,left=0,toolbars=no,scrollbars=no,status=no');
+
+        myWindow.document.write(html);
+
+        myWindow.document.close();
+
+        myWindow.focus();
+
+        myWindow.print();
+
+        myWindow.close();
+
+
+8. Email outlook 圆角
+
+<!--[if mso]>
+<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{marketplaceUrl}}" style="border-radius:8px;v-text-anchor:middle;width:166px;height:45px;" arcsize="10%" strokecolor="#ffffff" strokeweight ="0px" fillcolor="#002A3E"> <v:stroke dashstyle="solid" /> <w:anchorlock/> <center style="color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:11pt;font-weight:bold;">Go to Marketplace</center> </v:roundrect>
+<![endif]-->
+
+<!--[if !mso]> <!---->
+<table style="background-color:#002A3E;border-radius:5px;border:none;display:inline-block;font-size:16px;font-weight:normal;letter-spacing:0px;line-height:16px;padding:11px 12px 11px 12px;font-weight:600"> <tr> <td> <a style="color:#FFF;text-decoration:none" href={{marketplaceUrl}} target="_blank">Go to Marketplace</a> </td> </tr> </table>
+<!-- <![endif]-->
 
 三：aspx
 直接页面上写c# 再生成静态页面
