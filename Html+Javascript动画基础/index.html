@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        canvas{
+            width:500px;
+            height:500px;
+            margin:0 auto;
+            border:1px solid olive;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="./mouse.js"></script>
+
+    <script>
+        window.onload = function(){
+            var canvas = document.getElementById('canvas');
+            mouse = utils.captureMouse(canvas);
+            canvas.addEventListener('mousedown',function(){
+                console.log('x: '+mouse.x+' y: '+mouse.y);
+            },false)
+        }
+    </script>
+</body>
+</html>
