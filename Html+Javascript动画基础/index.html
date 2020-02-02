@@ -15,6 +15,8 @@
             height:500px;
             margin:0 auto;
             border:1px solid olive;
+            display: block;
+            margin:0 auto;
         }
     </style>
 </head>
@@ -23,13 +25,28 @@
 
     <script src="./mouse.js"></script>
 
+    <script src="./ArrowTest.js"></script>
+
     <script>
         window.onload = function(){
             var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
             mouse = utils.captureMouse(canvas);
-            canvas.addEventListener('mousedown',function(){
-                console.log('x: '+mouse.x+' y: '+mouse.y);
-            },false)
+            arrow = new Arrow();
+            // canvas.addEventListener('mousedown',function(){
+            //     console.log('x: '+mouse.x+' y: '+mouse.y);
+            // },false)
+
+            arrow.x = canvas.width/2;
+            arrow.y = canvas.height/2;
+            (function drawFrame(){
+                window.requestAnimationFrame(drawFrame,canvas);
+                context.clearRect(0,0,canvas.width,canvas.height);
+                var dx = mouse.x - arrow.x;
+                    dy = mouse.y - arrow.y;
+                arrow.rotation = Math.atan2(dy,dx);//弧度
+                arrow.draw(context);
+            }())
         }
     </script>
 </body>
