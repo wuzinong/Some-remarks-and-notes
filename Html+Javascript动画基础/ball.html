@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        canvas{
+            width:500px;
+            height:500px;
+            margin:0 auto;
+            border:1px solid olive;
+            display: block;
+            margin:0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script src="./mouse.js"></script>
+
+    <script src="./BallMoving.js"></script> 
+    <script>
+        window.onload = function(){ 
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            var ball = new Ball();
+            var angle = 0;
+            ball.x = canvas.width/2;
+            ball.y = canvas.height/2;
+            (function drawFrame(){
+                window.requestAnimationFrame(drawFrame,canvas);
+                context.clearRect(0,0,canvas.width,canvas.height);
+
+                ball.y = canvas.height/2+Math.cos(angle)*50;
+                ball.x = canvas.width/2+Math.sin(angle)*50;
+                angle +=0.1;
+                ball.draw(context);
+            }());
+        }
+    </script>
+</body>
+</html>
