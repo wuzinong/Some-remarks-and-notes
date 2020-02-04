@@ -26,7 +26,7 @@
     <script src="./mouse.js"></script>
 
     <script src="./ArrowTest.js"></script>
-
+    <!-- <script src="./wave.js"></script> -->
     <script>
         window.onload = function(){
             var canvas = document.getElementById('canvas');
@@ -44,9 +44,10 @@
                 context.clearRect(0,0,canvas.width,canvas.height);
                 var dx = mouse.x - arrow.x;
                     dy = mouse.y - arrow.y;
+                //arrow.rotation = Math.atan(dy/dx);
                 arrow.rotation = Math.atan2(dy,dx);//弧度
                 arrow.draw(context);
-            }())
+            }());
         }
     </script>
 </body>

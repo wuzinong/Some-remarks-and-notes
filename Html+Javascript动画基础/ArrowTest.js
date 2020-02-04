@@ -7,6 +7,7 @@ function Arrow(){
 Arrow.prototype.draw = function(context){
     context.save();
     context.translate(this.x,this.y);
+    context.rotate(this.rotation);
     context.lineWidth = 2;
     context.fillStyle = this.color;
     context.beginPath();
