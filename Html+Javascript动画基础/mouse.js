@@ -1,4 +1,5 @@
-var utils = {};
+ 
+if(!window.utils){window.utils = {}}
 
 utils.captureMouse = function(element){
     var mouse = {x:0,y:0};

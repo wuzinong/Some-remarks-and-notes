@@ -1,4 +1,5 @@
-var utils = {};
+ 
+if(!window.utils){window.utils = {}}
 utils.colorToRGB = function(color,alpha){
     //if string format, convert to number
     if(typeof color === 'string' && color[0] === '#'){
