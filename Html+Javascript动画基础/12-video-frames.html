@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        canvas{
+            width:500px;
+            height:500px;
+            margin:0 auto;
+            border:1px solid olive;
+            display: block;
+            margin:0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video</h1>
+        <video id="movieclip" width="600" height="600" autoplay controls>
+            <source src="movie.ogv" type="video/ogg"/>
+        </video>
+    <br>
+    <h1>Canvas</h1>
+    <canvas id="canvas"></canvas>
+    <script src="./mouse.js"></script>
+    <script src="./BallMoving.js"></script> 
+    
+    <script>
+        window.onload = function(){
+            var canvas = document.getElementById("canvas"),
+                context = canvas.getContext("2d"),
+                video = document.getElementById("movieclip");
+            (function drawFrame(){
+                window.requestAnimationFrame(drawFrame,canvas);
+
+                context.drawImage(video,0,0);
+            }())
+            
+        }
+    </script>
+</body>
+</html>

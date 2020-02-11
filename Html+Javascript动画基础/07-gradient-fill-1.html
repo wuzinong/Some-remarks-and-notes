@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        canvas{
+            width:500px;
+            height:500px;
+            margin:0 auto;
+            border:1px solid olive;
+            display: block;
+            margin:0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script src="./mouse.js"></script>
+ 
+    <script>
+        window.onload = function(){
+            var canvas = document.getElementById("canvas"),
+                context = canvas.getContext("2d"),
+                pt1 = {x:0,y:0},
+                pt2 = {x:100,y:100},
+                gradient = context.createLinearGradient(pt1.x,pt1.y,pt2.x,pt2.y);
+
+
+            //     var c1 = {x:150,y:150,radius:0};
+            // var c2 = {x:150,y:150,radius:50};
+            // gradient = context.createRadialGradient(c1.x,c1.y,c1.radius,c2.x,c2.y,c2.radius);
+
+                //gradient from white to red
+                gradient.addColorStop(0,"#ffffff");
+                gradient.addColorStop(0.5,"#00ff00");
+                gradient.addColorStop(1,"#000000");
+                context.fillStyle = gradient;
+                context.fillRect(0,0,100,100);
+
+
+       
+
+        }
+    </script>
+</body>
+</html>

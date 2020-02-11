@@ -37,3 +37,10 @@ utils.parseColor = function(color,toNumber){
         return color;
     }
 }
+
+utils.findPoint = function(){
+    //(x0,y0) 为起点，(x2,y2)为终点，(x1,y1)为控制点 曲线穿过点(xt,yt)
+    var x0,y0,x1,y1,x2,y2,xt,yt;
+    x1 = xt * 2 - (x0 + x2) / 2;
+    y1 = yt * 2 - (y0 + y2) / 2;
+}

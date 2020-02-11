@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        canvas{
+            width:500px;
+            height:500px;
+            margin:0 auto;
+            border:1px solid olive;
+            display: block;
+            margin:0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <textarea name="" id="log"></textarea>
+    <script src="./mouse.js"></script>
+ 
+    <script>
+        window.onload = function(){
+            var canvas = document.getElementById("canvas"),
+                context = canvas.getContext("2d"),
+                image = new Image();
+                image.src = "./1.png";
+                image.onload = function(){
+                    context.drawImage(image,0,0,80,50);
+
+                    var imageData = context.getImageData(0,0,200,100);
+                    //pixcels 包含height,width 和 data属性，data为一个数组
+                    //data : [255,255,0,255,
+                    //        255,0,0,0] //4个为一组表示一个像素，代表r,g,b,a
+                    var pixels = imageData.data
+                    //过滤红色通道
+                    for(var offset = 0,len=pixels.length;offset<len;offset+=4){
+                        pixels[offset] = 0; //r
+                        pixels[offset+1] = pixels[offset+1]; //g
+                        pixels[offset+2] = pixels[offset+2]; //b
+                        pixels[offset+3] = pixels[offset+3]; //a
+                    }
+                    context.putImageData(imageData,0,102);
+
+                }  
+
+            
+        }
+    </script>
+</body>
+</html>

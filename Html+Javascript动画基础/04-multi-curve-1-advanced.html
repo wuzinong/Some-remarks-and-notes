@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+        }
+        canvas{
+            width:500px;
+            height:500px;
+            margin:0 auto;
+            border:1px solid olive;
+            display: block;
+            margin:0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script src="./mouse.js"></script>
+ 
+    <script>
+        window.onload = function(){
+           var canvas = document.getElementById("canvas"),
+               context = canvas.getContext("2d"),
+               points = [],
+               numPoints = 9,
+               ctrlPoint = {};
+
+               for(var i=0;i<numPoints;i++){
+                   points.push({
+                       x:Math.random() * canvas.width,
+                       y:Math.random() * canvas.height
+                   })
+               }
+               context.beginPath();
+               context.moveTo(points[0].x,points[0].y);
+
+               //curve through the rest, stopping at each mid point
+               for(i =0;i<numPoints-2;i++){
+                   ctrlPoint.x = (points[i].x + points[i+1].x) / 2;
+                   ctrlPoint.y = (points[i].y + points[i+1].y) / 2;
+                   context.quadraticCurveTo(points[i].x,points[i].y,ctrlPoint.x,ctrlPoint.y);
+               }
+ 
+               context.quadraticCurveTo(points[i].x,points[i].y,points[i+1].x,points[i+1].y);
+               
+               context.stroke();
+        }
+    </script>
+</body>
+</html>
