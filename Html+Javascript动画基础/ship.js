@@ -13,5 +13,20 @@ Ship.prototype.draw = function(context){
     context.translate(this.x,this.y);
     context.rotate(this.rotation);
     context.lineWidth = 1;
-    context.strokeStyle
+    context.strokeStyle = "#000000";
+    context.beginPath();
+    context.moveTo(10,0);
+    context.lineTo(-10,10);
+    context.lineTo(-5,0);
+    context.lineTo(-10,-10);
+    context.lineTo(10,0);
+    context.stroke();
+    if(this.showFlame){
+        context.beginPath();
+        context.moveTo(-7.5,-5);
+        context.lineTo(-15,0);
+        context.lineTo(-7.5,5);
+        context.stroke();
+    }
+    context.restore();
 }

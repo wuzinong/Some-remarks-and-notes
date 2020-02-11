@@ -22,30 +22,78 @@
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <script src="./mouse.js"></script>
+    <script src="./ship.js"></script>
  
-
-    
-
     <script>
         window.onload = function(){
             var canvas = document.getElementById("canvas"),
                 context = canvas.getContext("2d"),
-                mouse = utils.captureMouse(canvas),
-                x0 = 50,
-                y0 = 50,
-                x2 = 90,
-                y2 = 100;
+                ship = new Ship(),
+                vr=0,
+                vx=0,
+                vy=0,
+                thrust = 0,
+                friction = 0.97;
+            ship.x = canvas.width/2;
+            ship.y = canvas.height/2;
+            // ship.draw(context);
+            window.addEventListener('keydown',function(event){
+                switch (event.keyCode){
+                    case 37:
+                        vr = -3;break;
+                    case 39:
+                        vr = 3;break;
+                    case 38:
+                        thrust = 0.05;
+                        ship.showFlame = true;
+                        break;
+                }
+            },false);
+            window.addEventListener('keyup',function(){
+                vr = 0;
+                thrust = 0;
+                ship.showFlame = false;
+            },false);
 
-                canvas.addEventListener("mousemove",function(){
+            (function drawFrame(){
+                    window.requestAnimationFrame(drawFrame,canvas);
                     context.clearRect(0,0,canvas.width,canvas.height);
-                    var x1 = mouse.x,
-                        y1 = mouse.y;
-                        context.beginPath();
-                        context.moveTo(x0,y0);
-                        context.quadraticCurveTo(x1,y1,x2,y2);
-                        context.stroke();
-                },false);
+
+                    ship.rotation += vr * Math.PI / 180;
+                    var angle = ship.rotation,
+                        ax = Math.cos(angle) * thrust,
+                        ay = Math.sin(angle) * thrust,
+                        left = 0,
+                        right = canvas.width,
+                        top = 0,
+                        bottom = canvas.height;
+
+                    vx += ax;
+                    vy += ay;
+                    ship.x += vx;
+                    ship.y += vy;
+
+                    //friction 
+                    vx *= friction;
+                    vy *= friction;
+
+                    //屏幕环绕
+                    if(ship.x - ship.width/2 > right){
+                        ship.x = left - ship.width/2;
+                    }else if(ship.x + ship.width/2 <left){
+                        ship.x = right + ship.width/2;
+                    }
+                    
+                    if(ship.y - ship.height/2 > bottom){
+                        ship.y = top - ship.height/2;
+                    }else if(ship.y < top - ship.height/2){
+                        ship.y = bottom + ship.height/2;
+                    }
+
+                    ship.draw(context);
+                }());
+
+             
         }
     </script>
 </body>
